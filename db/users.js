@@ -49,7 +49,8 @@ async function getUser({ username, password }){
         if(!matchingPassword){
             return;
         }
-
+        //hide that password!
+        delete password;
         return user;
 
     }catch (error){
@@ -57,8 +58,28 @@ async function getUser({ username, password }){
     }
 }
 
+//last minute addition, to help complete-ness:
+async function getUserById(userId) {
+    // first get the user
+    try {
+      const {rows: [user]} = await client.query(`
+        SELECT *
+        FROM users
+        WHERE id=$1;
+      `, [userId]);
+
+      delete user.password; 
+      
+      return user;  
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
 module.exports = {
     createUser,
     getUser,
+    getUserById
 }
 

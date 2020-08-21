@@ -104,7 +104,7 @@ async function updateRoutine(id, public, name, goal){
 //delete routine:
 //check this out kait, not really comfortable with this lol.
 //how to delete relative routine activities?????
-async function deleteRoutine({ id }){
+async function deleteRoutine( id ){
     try {
         
         //delete routine_activity
@@ -127,6 +127,18 @@ async function deleteRoutine({ id }){
     }
 }
 
+async function getRoutineById(id){
+    try {
+        const { rows: [routine] } = await client.query(`
+        SELECT * FROM routines
+        WHERE id=$1;
+        `, [id]);
+
+        return routine;
+    } catch (error) {
+        throw error;
+    }
+}
 
 module.exports = {
     getRoutines,
@@ -136,4 +148,5 @@ module.exports = {
     createRoutine,
     updateRoutine,
     deleteRoutine,
+    getRoutineById
 }

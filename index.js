@@ -22,9 +22,13 @@ server.use(express.json());
 server.use(express.urlencoded({extended: true}));
 
 //router: /API
-server.use('/API', require('./api'));
+server.use('/api', require('./api'));
 
+// error handling middleware
+server.use((error, req, res, next) => {
+     console.error('SERVER ERROR: ', error);
+      res.send(error);}) ;
 
 server.listen(PORT, () =>{
-    console.log("Server can hear you...");
+    console.log("Server can hear you...", PORT);
 });

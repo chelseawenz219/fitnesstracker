@@ -1,21 +1,21 @@
 const express = require('express');
-const router = express.router();
+const routinesRouter = express.Router();
 const { getRoutines, getPublicRoutines, getRoutinesByUser,
         getPublicRoutinesByUser, createRoutine, updateRoutine,
-        deleteRoutine, addRoutineActivity } = require('.../db');
+        deleteRoutine, addRoutineActivity, getRoutineById } = require('../db');
 
 // GET /routines:
-router.get('/', async (req, res, next) =>{
+routinesRouter.get('/', async (req, res, next) =>{
     try {
         const routines = await getPublicRoutines();
         res.send(routines);
     } catch (error) {
-        throw error;
+        next(error);
     }
 });
 
 // POST /routines:
-router.post('/', async (req, res, next) =>{
+routinesRouter.post('/', async (req, res, next) =>{
     try {
         const { name, goal } = req.body;
         const newRoutine = await createRoutine({
@@ -27,13 +27,12 @@ router.post('/', async (req, res, next) =>{
         res.send(newRoutine);
 
     } catch (error) {
-        console.log(error);
-        throw error;
+        next(error);
     }
 });
 
 // PATCH /routines:
-router.patch('/:routineId', async ( req, res, next) =>{
+routinesRouter.patch('/:routineId', async ( req, res, next) =>{
     try {
         const { name, goal, public } = req.body;
         const updatedRoutine = await updateRoutine({
@@ -44,24 +43,29 @@ router.patch('/:routineId', async ( req, res, next) =>{
         res.send(updatedRoutine);
 
     } catch (error) {
-        console.log(error);
         next(error);
-        //^^^ is this proper syntax? for the next argument?
     }
 });
 
 // DELETE /routines:
-router.delete('/:routineId', async ( req, res, next) =>{
+routinesRouter.delete('/:routineId', async ( req, res, next) =>{
     try {
-        const userRoutines = await getRoutinesByUser(req.user.username);
-        //I see I do need the get routine by Id in here as well.
-        //project is too late for me to go back, but, this is what I would do
-        //if it existed:
         const routineToDelete = await getRoutineById(req.params.routineId);
-        if(userRoutines.includes(routineToDelete)){
-            const deletedRoutine = await deleteRoutine(routineToDelete);
-            res.send(deletedRoutine);
-            //can I use array methods?
+        // if(!routineToDelete){
+        //     res.send({
+        //         message: "Routine doesn't exist."
+        //     });
+        // }
+        if (req.user.id === routineToDelete.creatorId){
+            await deleteRoutine(req.params.routineId);
+            res.send({
+                name: "Delete Success"
+            });
+        }else {
+            res.send({
+                name: "Error Unauthorized",
+                message: "You did not create this routine.."
+            });
         }
         
     } catch (error) {
@@ -72,7 +76,7 @@ router.delete('/:routineId', async ( req, res, next) =>{
 
 // POST /routines/routine:id/activities
 
-router.post('/:routineId/activities', async (req, res, next) =>{
+routinesRouter.post('/:routineId/activities', async (req, res, next) =>{
     try {
         const { activityId, count, duration } = req.body;
         const newRoutineActivity = await addRoutineActivity({
@@ -86,4 +90,4 @@ router.post('/:routineId/activities', async (req, res, next) =>{
     }
 });
 
-module.exports = router;
+module.exports = routinesRouter;

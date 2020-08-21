@@ -1,12 +1,13 @@
 const express = require('express');
-const router = express.router();
-const webtoken = require('jsonwebtoken');
-const { createUser, getUser } = require('.../db');
+const usersRouter = express.Router();
+const jwt = require('jsonwebtoken');
+require("dotenv").config();
+const { createUser, getUser } = require('../db');
 
 //import everything our router relies on^^^
 
 //POST/api/users/login
-router.post('/login', async (req, res, next) =>{
+usersRouter.post('/login', async (req, res, next) =>{
     const { username, password } = req.body;
     //^^req.body = data recieved in/from front-end request.
 
@@ -22,10 +23,15 @@ router.post('/login', async (req, res, next) =>{
     try {
         const user = await getUser({username, password});
         if(user){
-            const token = webtoken.sign({
+            const token = jwt.sign({
                 id: user.id,
                 username: user.username,
-            });
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "1w",
+            }
+            );
             res.send({
                 message: "Login Success!",
                 'token': token
@@ -43,7 +49,7 @@ router.post('/login', async (req, res, next) =>{
 });
 
 // POST /api/users/register
-router.post('/register', async (req, res, next) =>{
+usersRouter.post('/register', async (req, res, next) =>{
     try {
         const { username, password } = req.body;
         //if user already exists == login;
@@ -52,8 +58,6 @@ router.post('/register', async (req, res, next) =>{
             next({
                 name: 'ExistingUser',
                 message: "Re-Routing.."
-                //msg 4 kait: (im sure you can but):
-                //how can I send a request back to a different route??!
             });
             // res.send(existingUser);
             // and can each route only have one res.send?
@@ -72,4 +76,4 @@ router.post('/register', async (req, res, next) =>{
     }
 });
 
-module.exports = router;
+module.exports = usersRouter;

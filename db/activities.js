@@ -8,6 +8,8 @@ async function getActivities(){
             SELECT * FROM activities;
         `);
 
+        console.log("activities==", activities);
+
         return activities;
 
     } catch (error) {

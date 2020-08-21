@@ -6,7 +6,9 @@ const { getActivities, createActivity, updateActivity } = require('../db');
 activitiesRouter.get('/', async (req, res, next) =>{
     try {
         const activities = await getActivities();
+
         res.send(activities);
+
     } catch (error) {
         next(error);
     }
@@ -15,6 +17,7 @@ activitiesRouter.get('/', async (req, res, next) =>{
 //POST /activities:
 activitiesRouter.post('/', async (req, res, next) =>{
     try {
+        
         const { name, description } = req.body;
         const newActivity = await createActivity({ name, description });
 

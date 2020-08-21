@@ -1,6 +1,6 @@
 const client = require('./client');
 
-//add routine activity:
+//POST routine activity: (in api/routines.js);
 async function addRoutineActivity({ routineId, activityId, count, duration }){
     try {
         const {rows: [routine_activity]} = await client.query(`
@@ -15,15 +15,17 @@ async function addRoutineActivity({ routineId, activityId, count, duration }){
     }
 }
 
-//update routine activity:
-async function updateRoutineActivity({ id, count, duration }){
+//PATCH routine activity:
+async function updateRoutineActivity( id, count, duration ){
     try {
         const {rows: [routine_activity]} = await client.query(`
         UPDATE routine_activities
-        SET count=$2
-        SET duration=$3
+        SET count=$2,
+        duration=$3
         WHERE id=$1;
         `, [id, count, duration]);
+
+        // console.log(routine_activity);
 
         return routine_activity;
 
@@ -32,7 +34,7 @@ async function updateRoutineActivity({ id, count, duration }){
     }
 }
 
-//delete routine activity:
+//DELETE routine activity:
 async function deleteRoutineActivity({ id }){
     try {
         const {rows: [routine_activity]} = await client.query(`

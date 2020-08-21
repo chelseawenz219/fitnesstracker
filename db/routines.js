@@ -84,7 +84,7 @@ async function createRoutine({ creatorId, public, name, goal }){
 
 //update routine:
 //
-async function updateRoutine(id, public, name, goal){
+async function updateRoutine({id, public, name, goal}){
     try {
         const { rows: [routine]} = await client.query(`
         UPDATE routines

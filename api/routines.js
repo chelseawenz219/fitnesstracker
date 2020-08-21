@@ -7,7 +7,7 @@ const { getRoutines, getPublicRoutines, getRoutinesByUser,
 // GET /routines:
 routinesRouter.get('/', async (req, res, next) =>{
     try {
-        const routines = await getPublicRoutines();
+        const routines  = await getPublicRoutines();
         res.send(routines);
     } catch (error) {
         next(error);
@@ -17,13 +17,14 @@ routinesRouter.get('/', async (req, res, next) =>{
 // POST /routines:
 routinesRouter.post('/', async (req, res, next) =>{
     try {
-        const { name, goal } = req.body;
+        const { public, name, goal } = req.body;
+        console.log(req.user);
         const newRoutine = await createRoutine({
             creatorId: req.user.id,
-            name, goal,
-            public: req.body.public
+            public, name, goal
         });
-
+        //not sure if this one will work until we can hold
+        //a login token somewhere?
         res.send(newRoutine);
 
     } catch (error) {
@@ -34,11 +35,13 @@ routinesRouter.post('/', async (req, res, next) =>{
 // PATCH /routines:
 routinesRouter.patch('/:routineId', async ( req, res, next) =>{
     try {
-        const { name, goal, public } = req.body;
+        const { public, name, goal } = req.body;
+        const routineId = parseInt(req.params.routineId);
+        console.log("type:", typeof routineId, routineId);
         const updatedRoutine = await updateRoutine({
-            id: req.params.routineId,
+            id: routineId,
             public, name, goal
-        });
+    });
 
         res.send(updatedRoutine);
 

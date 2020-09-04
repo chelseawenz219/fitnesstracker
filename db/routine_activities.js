@@ -11,7 +11,7 @@ async function addRoutineActivity({ routineId, activityId, count, duration }){
         return routine_activity;
 
     } catch (error) {
-        throw error;
+        console.error(error);
     }
 }
 
@@ -30,7 +30,7 @@ async function updateRoutineActivity( id, count, duration ){
         return routine_activity;
 
     } catch (error) {
-        throw error;
+        console.error(error);
     }
 }
 
@@ -42,10 +42,8 @@ async function deleteRoutineActivity({ id }){
         WHERE id = $1;
         `, [id]);
 
-        return routine_activity;
-
     } catch (error) {
-        throw error;
+        console.error(error);
     }
 }
 

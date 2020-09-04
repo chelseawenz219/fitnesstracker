@@ -10,14 +10,13 @@ const { getUserById } = require("../db/users");
 // })
 
 apiRouter.use(async (req, res, next) => {
-  try {
-    const prefix = "Bearer";
+    const prefix = "Bearer ";
     const auth = req.header("Authorization");
     if (!auth) {
       next();
     } else if (auth.startsWith(prefix)) {
       const token = auth.slice(prefix.length);
-
+      console.log("JWT:", JWT_SECRET, "token:", token);
       try {
         const { id } = jwt.verify(token, JWT_SECRET);
         console.log("id", id);
@@ -28,18 +27,14 @@ apiRouter.use(async (req, res, next) => {
         }
       } catch ({ name, message }) {
         console.log(name, message);
-        next({ name, message });
+        next({ hi:"Chelsea", name, message });
       }
     } else {
       next({
         name: "AuthorizationHeaderError",
         message: `Authorization token must start with ${prefix}`,
       });
-    }
-  } catch (error) {
-    next(error);
-  }
-});
+}});
 
 
 const usersRouter = require("./users");

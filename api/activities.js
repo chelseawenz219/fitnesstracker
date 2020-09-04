@@ -1,6 +1,6 @@
 const express = require('express');
 const activitiesRouter = express.Router();
-const { getActivities, createActivity, updateActivity } = require('../db');
+const { getActivities, createActivity, updateActivity, deleteActivity } = require('../db');
 
 //GET /activities:
 activitiesRouter.get('/', async (req, res, next) =>{
@@ -40,5 +40,16 @@ activitiesRouter.patch('/:activityId', async (req, res, next) =>{
         next(error);
     }
 });
+
+//DELETE:
+activitiesRouter.delete('/:activityId', async (req, res, next)=>{
+    try {
+        const activityId = req.params.activityId;
+        await deleteActivity(activityId);
+        res.send("Successful DELETE!");
+    } catch (error) {
+        next(error);
+    }
+})
 
 module.exports = activitiesRouter;

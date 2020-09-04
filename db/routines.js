@@ -73,6 +73,7 @@ async function createRoutine({ creatorId, public, name, goal }){
         const { rows: [routine] } = await client.query(`
         INSERT INTO routines("creatorId", public, name, goal)
         VALUES ($1, $2, $3, $4)
+        RETURNING *;
         `, [creatorId, public, name, goal]);
 
         return routine;
@@ -110,20 +111,16 @@ async function deleteRoutine( id ){
         //delete routine_activity
         const {rows: [routine_activity]} = await client.query(`
         DELETE FROM routine_activities
-        WHERE "routineId"=$1
-        RETURNING *;
+        WHERE "routineId"=$1;
         `,[ id ]);
         //delete specified routine.
         const {rows: [routine]} = await client.query(`
         DELETE FROM routines
-        WHERE id=$1
-        RETURNING *;
+        WHERE id=$1;
         `,[ id ]);
-
-        return rows;
-
+        
     } catch (error) {
-        throw error;
+        console.error(error);
     }
 }
 

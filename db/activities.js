@@ -27,7 +27,7 @@ async function createActivity({ name, description }){
         return activity;
 
     } catch (error) {
-        throw error;
+        console.error(error);
     }
 }
 
@@ -47,8 +47,21 @@ async function updateActivity({ id, name, description }){
     }
 }
 
+async function deleteActivity(activityId){
+    try {
+        const {rows: [activity]} = await client.query(`
+        DELETE * FROM activities
+        WHERE id=$1;
+        `[activityId]);
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 module.exports = {
     getActivities,
     createActivity,
     updateActivity,
+    deleteActivity,
 }
